@@ -1,0 +1,7 @@
+model\TaxPis.class
+model\NcmSub.class
+model\NcmGroup.class
+model\Ncm.class
+model\Product.class
+model\TaxCofin.class
+model\TaxIpi.class

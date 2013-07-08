@@ -1,5 +1,7 @@
 *.class
 negocio/*
+*/target/*
+*/build/*
 
 # Package Files #
 *.jar
