@@ -4,4 +4,7 @@
 	"http://java.sun.com/dtd/application_1_3.dtd">
 <application>
   <display-name>brtax-ear</display-name>
+  <module>
+    <ejb>brtax-ejb-1.0-SNAPSHOT.jar</ejb>
+  </module>
 </application>

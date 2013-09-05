@@ -1,19 +1,48 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.brtax</groupId>
-  <artifactId>brtax-ear</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
-  <packaging>ear</packaging>
-  <dependencies>
-  	<dependency>
-  		<groupId>com.brtax</groupId>
-  		<artifactId>brtax-jpa</artifactId>
-  		<version>1.0-SNAPSHOT</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>com.brtax</groupId>
-  		<artifactId>brtax-ejb</artifactId>
-  		<version>1.0-SNAPSHOT</version>
-  	</dependency>
-  </dependencies>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.brtax</groupId>
+    <artifactId>brtax-ear</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>ear</packaging>
+  
+    <name>brtax-ear</name>
+
+       <build>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <finalName>my-ejb-project</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-ejb-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <ejbVersion>3.0</ejbVersion>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+  
+    <dependencies>
+        <dependency>
+            <groupId>com.brtax</groupId>
+            <artifactId>brtax-jpa</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.brtax</groupId>
+            <artifactId>brtax-ejb</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>ejb</type>
+        </dependency>
+      
+    </dependencies>
 </project>
