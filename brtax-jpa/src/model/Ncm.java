@@ -85,7 +85,7 @@ public class Ncm implements Serializable {
 	//bi-directional many-to-one association to TaxPis
 	@ManyToOne
 	@JoinColumn(name="id_tax_pis", nullable=false)
-	public TaxPis getTaxPi() {
+	public TaxPis getTaxPis() {
 		return this.taxPis;
 	}
 
