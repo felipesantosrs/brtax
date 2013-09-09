@@ -1,77 +1,127 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package model;
 
 import java.io.Serializable;
-import javax.persistence.*;
-
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The persistent class for the product database table.
- * 
+ *
+ * @author Felipe
  */
 @Entity
-@Table(name="product")
+@Table(name = "product")
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Product.findAll", query = "SELECT p FROM Product p"),
+    @NamedQuery(name = "Product.findByIdProduct", query = "SELECT p FROM Product p WHERE p.idProduct = :idProduct"),
+    @NamedQuery(name = "Product.findByDescription", query = "SELECT p FROM Product p WHERE p.description = :description"),
+    @NamedQuery(name = "Product.findByProductName", query = "SELECT p FROM Product p WHERE p.productName = :productName"),
+    @NamedQuery(name = "Product.findByBrand", query = "SELECT p FROM Product p WHERE p.brand = :brand"),
+    @NamedQuery(name = "Product.findByGtin", query = "SELECT p FROM Product p WHERE p.gtin = :gtin")})
 public class Product implements Serializable {
-	private static final long serialVersionUID = 1L;
-	private int idProduct;
-	private String brand;
-	private String description;
-	private int gtin;
-	private String productName;
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id_product")
+    private Integer idProduct;
+    @Column(name = "description")
+    private String description;
+    @Column(name = "product_name")
+    private String productName;
+    @Column(name = "brand")
+    private String brand;
+    @Basic(optional = false)
+    @Column(name = "gtin")
+    private long gtin;
 
-	public Product() {
-	}
+    public Product() {
+    }
 
+    public Product(Integer idProduct) {
+        this.idProduct = idProduct;
+    }
 
-	@Id
-	@SequenceGenerator(name="PRODUCT_IDPRODUCT_GENERATOR" )
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="PRODUCT_IDPRODUCT_GENERATOR")
-	@Column(name="id_product", unique=true, nullable=false)
-	public int getIdProduct() {
-		return this.idProduct;
-	}
+    public Product(Integer idProduct, int gtin) {
+        this.idProduct = idProduct;
+        this.gtin = gtin;
+    }
 
-	public void setIdProduct(int idProduct) {
-		this.idProduct = idProduct;
-	}
+    public Integer getIdProduct() {
+        return idProduct;
+    }
 
+    public void setIdProduct(Integer idProduct) {
+        this.idProduct = idProduct;
+    }
 
-	@Column(length=50)
-	public String getBrand() {
-		return this.brand;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setBrand(String brand) {
-		this.brand = brand;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
+    public String getProductName() {
+        return productName;
+    }
 
-	@Column(length=500)
-	public String getDescription() {
-		return this.description;
-	}
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getBrand() {
+        return brand;
+    }
 
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
 
-	@Column(nullable=false)
-	public int getGtin() {
-		return this.gtin;
-	}
+    public long getGtin() {
+        return gtin;
+    }
 
-	public void setGtin(int gtin) {
-		this.gtin = gtin;
-	}
+    public void setGtin(long gtin) {
+        this.gtin = gtin;
+    }
 
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (idProduct != null ? idProduct.hashCode() : 0);
+        return hash;
+    }
 
-	@Column(name="product_name", length=100)
-	public String getProductName() {
-		return this.productName;
-	}
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Product)) {
+            return false;
+        }
+        Product other = (Product) object;
+        if ((this.idProduct == null && other.idProduct != null) || (this.idProduct != null && !this.idProduct.equals(other.idProduct))) {
+            return false;
+        }
+        return true;
+    }
 
-	public void setProductName(String productName) {
-		this.productName = productName;
-	}
-
+    @Override
+    public String toString() {
+        return "model.Product[ idProduct=" + idProduct + " ]";
+    }
+    
 }

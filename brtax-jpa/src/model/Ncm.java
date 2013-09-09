@@ -1,96 +1,131 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package model;
 
 import java.io.Serializable;
-import javax.persistence.*;
-
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The persistent class for the ncm database table.
- * 
+ *
+ * @author Felipe
  */
 @Entity
-@Table(name="ncm")
+@Table(name = "ncm")
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Ncm.findAll", query = "SELECT n FROM Ncm n"),
+    @NamedQuery(name = "Ncm.findByNcmCode", query = "SELECT n FROM Ncm n WHERE n.ncmCode = :ncmCode"),
+    @NamedQuery(name = "Ncm.findByDescription", query = "SELECT n FROM Ncm n WHERE n.description = :description")})
 public class Ncm implements Serializable {
-	private static final long serialVersionUID = 1L;
-	private int ncmCode;
-	private String description;
-	private NcmSub ncmSub;
-	private TaxCofin taxCofin;
-	private TaxIpi taxIpi;
-	private TaxPis taxPis;
+    private static final long serialVersionUID = 1L;
+    @Id
+    @Basic(optional = false)
+    @Column(name = "ncm_code")
+    private Integer ncmCode;
+    @Column(name = "description")
+    private String description;
+    @JoinColumn(name = "id_tax_pis", referencedColumnName = "id_tax_pis")
+    @ManyToOne(optional = false)
+    private TaxPis idTaxPis;
+    @JoinColumn(name = "id_tax_cofins", referencedColumnName = "id_tax_cofins")
+    @ManyToOne(optional = false)
+    private TaxCofins idTaxCofins;
+    @JoinColumn(name = "id_tax_ipi", referencedColumnName = "id_tax_ipi")
+    @ManyToOne(optional = false)
+    private TaxIpi idTaxIpi;
+    @JoinColumn(name = "ncm_sub_code", referencedColumnName = "ncm_sub_code")
+    @ManyToOne(optional = false)
+    private NcmSub ncmSubCode;
 
-	public Ncm() {
-	}
+    public Ncm() {
+    }
 
+    public Ncm(Integer ncmCode) {
+        this.ncmCode = ncmCode;
+    }
 
-	@Id
-	@SequenceGenerator(name="NCM_NCMCODE_GENERATOR" )
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="NCM_NCMCODE_GENERATOR")
-	@Column(name="ncm_code", unique=true, nullable=false)
-	public int getNcmCode() {
-		return this.ncmCode;
-	}
+    public Integer getNcmCode() {
+        return ncmCode;
+    }
 
-	public void setNcmCode(int ncmCode) {
-		this.ncmCode = ncmCode;
-	}
+    public void setNcmCode(Integer ncmCode) {
+        this.ncmCode = ncmCode;
+    }
 
+    public String getDescription() {
+        return description;
+    }
 
-	@Column(length=100)
-	public String getDescription() {
-		return this.description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public TaxPis getIdTaxPis() {
+        return idTaxPis;
+    }
 
+    public void setIdTaxPis(TaxPis idTaxPis) {
+        this.idTaxPis = idTaxPis;
+    }
 
-	//bi-directional many-to-one association to NcmSub
-	@ManyToOne
-	@JoinColumn(name="ncm_sub_code", nullable=false)
-	public NcmSub getNcmSub() {
-		return this.ncmSub;
-	}
+    public TaxCofins getIdTaxCofins() {
+        return idTaxCofins;
+    }
 
-	public void setNcmSub(NcmSub ncmSub) {
-		this.ncmSub = ncmSub;
-	}
+    public void setIdTaxCofins(TaxCofins idTaxCofins) {
+        this.idTaxCofins = idTaxCofins;
+    }
 
+    public TaxIpi getIdTaxIpi() {
+        return idTaxIpi;
+    }
 
-	//bi-directional many-to-one association to TaxCofin
-	@ManyToOne
-	@JoinColumn(name="id_tax_cofins", nullable=false)
-	public TaxCofin getTaxCofin() {
-		return this.taxCofin;
-	}
+    public void setIdTaxIpi(TaxIpi idTaxIpi) {
+        this.idTaxIpi = idTaxIpi;
+    }
 
-	public void setTaxCofin(TaxCofin taxCofin) {
-		this.taxCofin = taxCofin;
-	}
+    public NcmSub getNcmSubCode() {
+        return ncmSubCode;
+    }
 
+    public void setNcmSubCode(NcmSub ncmSubCode) {
+        this.ncmSubCode = ncmSubCode;
+    }
 
-	//bi-directional many-to-one association to TaxIpi
-	@ManyToOne
-	@JoinColumn(name="id_tax_ipi", nullable=false)
-	public TaxIpi getTaxIpi() {
-		return this.taxIpi;
-	}
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (ncmCode != null ? ncmCode.hashCode() : 0);
+        return hash;
+    }
 
-	public void setTaxIpi(TaxIpi taxIpi) {
-		this.taxIpi = taxIpi;
-	}
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Ncm)) {
+            return false;
+        }
+        Ncm other = (Ncm) object;
+        if ((this.ncmCode == null && other.ncmCode != null) || (this.ncmCode != null && !this.ncmCode.equals(other.ncmCode))) {
+            return false;
+        }
+        return true;
+    }
 
-
-	//bi-directional many-to-one association to TaxPis
-	@ManyToOne
-	@JoinColumn(name="id_tax_pis", nullable=false)
-	public TaxPis getTaxPis() {
-		return this.taxPis;
-	}
-
-	public void setTaxPis(TaxPis taxPis) {
-		this.taxPis = taxPis;
-	}
-
+    @Override
+    public String toString() {
+        return "model.Ncm[ ncmCode=" + ncmCode + " ]";
+    }
+    
 }

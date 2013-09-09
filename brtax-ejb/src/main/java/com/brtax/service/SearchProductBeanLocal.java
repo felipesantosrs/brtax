@@ -13,6 +13,11 @@ import javax.ejb.Local;
 @Local
 public interface SearchProductBeanLocal {
     
-        String searchProductEAN(int ean) ;
+     /**
+     *
+     * @param ean
+     * @return
+     */
+    String searchProductEAN(String ean);
     
 }

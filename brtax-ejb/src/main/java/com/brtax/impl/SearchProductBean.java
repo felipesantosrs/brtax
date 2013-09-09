@@ -7,9 +7,13 @@ package com.brtax.impl;
 import com.brtax.mbean.SearchProductMBean;
 import com.brtax.service.SearchProductBeanLocal;
 import dao.ProductDAO;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.Stateless;
+import javax.jws.*;
 import model.Product;
 import org.jsoup.nodes.Document;
 
@@ -18,26 +22,40 @@ import org.jsoup.nodes.Document;
  * @author Felipe
  */
 @Stateless
+@WebService(name = "BRTAXPortType",
+        serviceName = "BRTAXService",
+        portName = "BRTAXSoapPort",
+        targetNamespace = "http://brtax.com")
+
 public class SearchProductBean implements SearchProductBeanLocal {
 
     Document doc = null;
-    Product product = null;
 
-    public String searchProductEAN(int ean) {
+    List<Product> listProduct = new ArrayList<>();
+       @WebResult(name="result") 
+       @Override
+       public String searchProductEAN(@WebParam(name="ean")  String ean ) {
         try {
+            long eanLong = Long.parseLong(ean);
             ProductDAO productDAO = new ProductDAO();
-            product = productDAO.searchProductToEan(ean);
-            if (product == null) {
+            listProduct = productDAO.searchProductToEan(eanLong);
+            String valor;
+            if (listProduct.isEmpty()) {
                 SearchProductMBean searchProduct = new SearchProductMBean();
-                searchProduct.searchGoogle(ean);
-                searchProduct.searchCosmos(ean);
+                searchProduct.searchGoogle(eanLong);
+                searchProduct.searchCosmos(eanLong);
+                valor="Sucesso IF";
+            }else {
+             valor="Sucesso ELSE";
             }
             
 
-
-        } catch (Exception e) {
+            return valor;
+        } catch ( IOException e) {
+            String msg = e.toString();
+            return msg;
         }
-        return null;
+        
 
 
     }
@@ -51,5 +69,6 @@ public class SearchProductBean implements SearchProductBeanLocal {
     public void stop() {
         System.out.println("Stopping");
     }
+
 
 }

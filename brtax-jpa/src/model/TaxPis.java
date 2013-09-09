@@ -1,69 +1,113 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package model;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
-
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * The persistent class for the tax_pis database table.
- * 
+ *
+ * @author Felipe
  */
 @Entity
-@Table(name="tax_pis")
+@Table(name = "tax_pis")
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "TaxPis.findAll", query = "SELECT t FROM TaxPis t"),
+    @NamedQuery(name = "TaxPis.findByIdTaxPis", query = "SELECT t FROM TaxPis t WHERE t.idTaxPis = :idTaxPis"),
+    @NamedQuery(name = "TaxPis.findByAliquot", query = "SELECT t FROM TaxPis t WHERE t.aliquot = :aliquot"),
+    @NamedQuery(name = "TaxPis.findByDecree", query = "SELECT t FROM TaxPis t WHERE t.decree = :decree")})
 public class TaxPis implements Serializable {
-	private static final long serialVersionUID = 1L;
-	private int idTaxPis;
-	private BigDecimal aliquot;
-	private String decree;
-	private List<Ncm> ncms;
+    private static final long serialVersionUID = 1L;
+    @Id
+    @Basic(optional = false)
+    @Column(name = "id_tax_pis")
+    private Integer idTaxPis;
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Column(name = "aliquot")
+    private BigDecimal aliquot;
+    @Column(name = "decree")
+    private String decree;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idTaxPis")
+    private List<Ncm> ncmList;
 
-	public TaxPis() {
-	}
+    public TaxPis() {
+    }
 
+    public TaxPis(Integer idTaxPis) {
+        this.idTaxPis = idTaxPis;
+    }
 
-	@Id
-	@SequenceGenerator(name="TAX_PIS_IDTAXPIS_GENERATOR" )
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="TAX_PIS_IDTAXPIS_GENERATOR")
-	@Column(name="id_tax_pis", unique=true, nullable=false)
-	public int getIdTaxPis() {
-		return this.idTaxPis;
-	}
+    public Integer getIdTaxPis() {
+        return idTaxPis;
+    }
 
-	public void setIdTaxPis(int idTaxPis) {
-		this.idTaxPis = idTaxPis;
-	}
+    public void setIdTaxPis(Integer idTaxPis) {
+        this.idTaxPis = idTaxPis;
+    }
 
+    public BigDecimal getAliquot() {
+        return aliquot;
+    }
 
-	@Column(precision=10, scale=2)
-	public BigDecimal getAliquot() {
-		return this.aliquot;
-	}
+    public void setAliquot(BigDecimal aliquot) {
+        this.aliquot = aliquot;
+    }
 
-	public void setAliquot(BigDecimal aliquot) {
-		this.aliquot = aliquot;
-	}
+    public String getDecree() {
+        return decree;
+    }
 
+    public void setDecree(String decree) {
+        this.decree = decree;
+    }
 
-	@Column(length=255)
-	public String getDecree() {
-		return this.decree;
-	}
+    @XmlTransient
+    public List<Ncm> getNcmList() {
+        return ncmList;
+    }
 
-	public void setDecree(String decree) {
-		this.decree = decree;
-	}
+    public void setNcmList(List<Ncm> ncmList) {
+        this.ncmList = ncmList;
+    }
 
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (idTaxPis != null ? idTaxPis.hashCode() : 0);
+        return hash;
+    }
 
-	//bi-directional many-to-one association to Ncm
-	@OneToMany(mappedBy="taxPi")
-	public List<Ncm> getNcms() {
-		return this.ncms;
-	}
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof TaxPis)) {
+            return false;
+        }
+        TaxPis other = (TaxPis) object;
+        if ((this.idTaxPis == null && other.idTaxPis != null) || (this.idTaxPis != null && !this.idTaxPis.equals(other.idTaxPis))) {
+            return false;
+        }
+        return true;
+    }
 
-	public void setNcms(List<Ncm> ncms) {
-		this.ncms = ncms;
-	}
-
+    @Override
+    public String toString() {
+        return "model.TaxPis[ idTaxPis=" + idTaxPis + " ]";
+    }
+    
 }

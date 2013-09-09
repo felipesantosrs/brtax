@@ -4,8 +4,11 @@
  */
 package dao;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.persistence.Query;
 import model.Product;
 
@@ -14,22 +17,31 @@ import model.Product;
  * @author Felipe
  */
 public class ProductDAO {
+    
+private EntityManagerFactory emf;
+ 
+    private EntityManager getEntityManager() {
+        if (emf == null) {
+            emf = Persistence.createEntityManagerFactory("brtax");
+        }
+        return emf.createEntityManager();
+    }
+   
    /** 
    * Consulta produto por EAN
    * @param ean
    * @return o objeto Pessoa.
    */
-  public Product searchProductToEan( int ean) {
-      EntityManager entityManager = UtilDAO.getEntityManager();
-      Product product = null;
+    
+  public List<Product> searchProductToEan( long ean) {
+      EntityManager em = getEntityManager();
+      List<Product> listProduct = new ArrayList<>();
     try{
-        Query query = entityManager.createQuery("select p from Product as p where p.gtin=:ean");
-        query.setParameter("ean", ean);
-        product =  (Product) query.getSingleResult();
+       listProduct= em.createNamedQuery("Product.findByGtin").setParameter("gtin", ean).getResultList();
     } finally {
-      entityManager.close();
+      em.close();
     }
-    return product;
+    return listProduct;
   }
 }
 
