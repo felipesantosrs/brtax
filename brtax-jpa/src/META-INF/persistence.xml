@@ -3,18 +3,14 @@
   <persistence-unit name="brtax" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <class>model.Ncm</class>
-    <class>model.NcmGroup</class>
-    <class>model.NcmSub</class>
     <class>model.Product</class>
-    <class>model.TaxCofins</class>
-    <class>model.TaxIpi</class>
-    <class>model.TaxPis</class>
+    <class>model.NcmTax</class>
+    <validation-mode>NONE</validation-mode>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/brtax"/>
       <property name="javax.persistence.jdbc.password" value="admin"/>
       <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
       <property name="javax.persistence.jdbc.user" value="admin"/>
-      <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
     </properties>
   </persistence-unit>
 </persistence>

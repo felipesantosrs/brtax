@@ -11,6 +11,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -28,8 +30,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Product.findByIdProduct", query = "SELECT p FROM Product p WHERE p.idProduct = :idProduct"),
     @NamedQuery(name = "Product.findByDescription", query = "SELECT p FROM Product p WHERE p.description = :description"),
     @NamedQuery(name = "Product.findByProductName", query = "SELECT p FROM Product p WHERE p.productName = :productName"),
-    @NamedQuery(name = "Product.findByBrand", query = "SELECT p FROM Product p WHERE p.brand = :brand"),
-    @NamedQuery(name = "Product.findByGtin", query = "SELECT p FROM Product p WHERE p.gtin = :gtin")})
+    @NamedQuery(name = "Product.findByCategory", query = "SELECT p FROM Product p WHERE p.category = :category"),
+    @NamedQuery(name = "Product.findByGtin", query = "SELECT p FROM Product p WHERE p.gtin = :gtin"),
+    @NamedQuery(name = "Product.findByPartner", query = "SELECT p FROM Product p WHERE p.partner = :partner")})
 public class Product implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -41,11 +44,16 @@ public class Product implements Serializable {
     private String description;
     @Column(name = "product_name")
     private String productName;
-    @Column(name = "brand")
-    private String brand;
+    @Column(name = "category")
+    private String category;
     @Basic(optional = false)
     @Column(name = "gtin")
     private long gtin;
+    @Column(name = "partner")
+    private String partner;
+    @JoinColumn(name = "ncm_code", referencedColumnName = "ncm_code")
+    @ManyToOne(optional = false)
+    private Ncm ncmCode;
 
     public Product() {
     }
@@ -54,9 +62,9 @@ public class Product implements Serializable {
         this.idProduct = idProduct;
     }
 
-    public Product(Integer idProduct, int gtin) {
-        this.idProduct = idProduct;
+    public Product(long gtin, String partner) {
         this.gtin = gtin;
+        this.partner = partner;
     }
 
     public Integer getIdProduct() {
@@ -83,12 +91,12 @@ public class Product implements Serializable {
         this.productName = productName;
     }
 
-    public String getBrand() {
-        return brand;
+    public String getCategory() {
+        return category;
     }
 
-    public void setBrand(String brand) {
-        this.brand = brand;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public long getGtin() {
@@ -97,6 +105,22 @@ public class Product implements Serializable {
 
     public void setGtin(long gtin) {
         this.gtin = gtin;
+    }
+
+    public String getPartner() {
+        return partner;
+    }
+
+    public void setPartner(String partner) {
+        this.partner = partner;
+    }
+
+    public Ncm getNcmCode() {
+        return ncmCode;
+    }
+
+    public void setNcmCode(Ncm ncmCode) {
+        this.ncmCode = ncmCode;
     }
 
     @Override

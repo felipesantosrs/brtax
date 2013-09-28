@@ -5,16 +5,17 @@
 package model;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -26,7 +27,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Ncm.findAll", query = "SELECT n FROM Ncm n"),
     @NamedQuery(name = "Ncm.findByNcmCode", query = "SELECT n FROM Ncm n WHERE n.ncmCode = :ncmCode"),
-    @NamedQuery(name = "Ncm.findByDescription", query = "SELECT n FROM Ncm n WHERE n.description = :description")})
+    @NamedQuery(name = "Ncm.findByDescription", query = "SELECT n FROM Ncm n WHERE n.description like :description")})
 public class Ncm implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -35,18 +36,8 @@ public class Ncm implements Serializable {
     private Integer ncmCode;
     @Column(name = "description")
     private String description;
-    @JoinColumn(name = "id_tax_pis", referencedColumnName = "id_tax_pis")
-    @ManyToOne(optional = false)
-    private TaxPis idTaxPis;
-    @JoinColumn(name = "id_tax_cofins", referencedColumnName = "id_tax_cofins")
-    @ManyToOne(optional = false)
-    private TaxCofins idTaxCofins;
-    @JoinColumn(name = "id_tax_ipi", referencedColumnName = "id_tax_ipi")
-    @ManyToOne(optional = false)
-    private TaxIpi idTaxIpi;
-    @JoinColumn(name = "ncm_sub_code", referencedColumnName = "ncm_sub_code")
-    @ManyToOne(optional = false)
-    private NcmSub ncmSubCode;
+    @OneToMany(mappedBy = "ncmCode")
+    private List<NcmTax> ncmTaxList;
 
     public Ncm() {
     }
@@ -71,36 +62,13 @@ public class Ncm implements Serializable {
         this.description = description;
     }
 
-    public TaxPis getIdTaxPis() {
-        return idTaxPis;
+    @XmlTransient
+    public List<NcmTax> getNcmTaxList() {
+        return ncmTaxList;
     }
 
-    public void setIdTaxPis(TaxPis idTaxPis) {
-        this.idTaxPis = idTaxPis;
-    }
-
-    public TaxCofins getIdTaxCofins() {
-        return idTaxCofins;
-    }
-
-    public void setIdTaxCofins(TaxCofins idTaxCofins) {
-        this.idTaxCofins = idTaxCofins;
-    }
-
-    public TaxIpi getIdTaxIpi() {
-        return idTaxIpi;
-    }
-
-    public void setIdTaxIpi(TaxIpi idTaxIpi) {
-        this.idTaxIpi = idTaxIpi;
-    }
-
-    public NcmSub getNcmSubCode() {
-        return ncmSubCode;
-    }
-
-    public void setNcmSubCode(NcmSub ncmSubCode) {
-        this.ncmSubCode = ncmSubCode;
+    public void setNcmTaxList(List<NcmTax> ncmTaxList) {
+        this.ncmTaxList = ncmTaxList;
     }
 
     @Override

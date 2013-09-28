@@ -37,12 +37,22 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.brtax</groupId>
-            <artifactId>brtax-ejb</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>test</scope>
-            <type>jar</type>
+            <groupId>com.thoughtworks.xstream</groupId>
+            <artifactId>xstream</artifactId>
+            <version>1.4.4</version>
         </dependency>
+        <dependency>
+            <groupId>com.thoughtworks.xstream</groupId>
+            <artifactId>xstream-parent</artifactId>
+            <version>1.4.4</version>
+            <type>pom</type>
+        </dependency>
+    <dependency>
+	<groupId>jdom</groupId>
+	<artifactId>jdom</artifactId>
+	<version>1.1</version>
+</dependency>
+            
     </dependencies>
     
     <build>
@@ -54,9 +64,6 @@
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
-                    <compilerArguments>
-                        <endorseddirs>${endorsed.dir}</endorseddirs>
-                    </compilerArguments>
                 </configuration>
             </plugin>
             <plugin>
@@ -78,7 +85,7 @@
                             <goal>copy</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${endorsed.dir}</outputDirectory>
+                           
                             <silent>true</silent>
                             <artifactItems>
                                 <artifactItem>

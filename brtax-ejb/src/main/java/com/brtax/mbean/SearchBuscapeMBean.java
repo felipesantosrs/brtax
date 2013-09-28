@@ -4,50 +4,66 @@
  */
 package com.brtax.mbean;
 
+import dao.NcmDAO;
 import java.io.IOException;
-import org.jsoup.Jsoup;
-import org.jsoup.select.Elements;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
+import java.net.*;
+import java.io.*;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import model.Product;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 
 /**
  *
  * @author Felipe
  */
-public class SearchProductMBean {
+public class SearchBuscapeMBean {
 
-    Document doc = null;
+    private final String URL_WEBSERVICE_BUSCAPE = "http://sandbox.buscape.com/service/findOfferList/67616954656369504a726b3d/?barcode=";
+    private final int HTTP_COD_SUCESSO = 200;
 
-    public Document searchGoogle(long ean) throws IOException {
-        doc = Jsoup.connect("https://www.google.com.br/?gws_rd=cr&ei=xE0tUt3sDYqG9QT1r4G4CQ#q=" + ean).userAgent("Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.2 Safari/537.36").timeout(50000).get();
-        Elements links = doc.select("li[class=g]");
-        for (Element link : links) {
-            Elements titles = link.select("h3[class=r]");
-            String title = titles.text();
-
-            Elements bodies = link.select("span[class=st]");
-            String body = bodies.text();
-
-            System.out.println("Title: " + title);
-            System.out.println("Body: " + body + "\n");
+    public Product searchProduct(long ean) throws MalformedURLException, IOException {
+        URL url = new URL(URL_WEBSERVICE_BUSCAPE + ean);
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+        
+        // con.setRequestProperty("Accept", "text/xml");  
+        if (con.getResponseCode() != HTTP_COD_SUCESSO) {
+            throw new RuntimeException("HTTP error code : " + con.getResponseCode());
         }
-        return doc;
-    }
+            BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(),"UTF-8"));
+        SAXBuilder sb = new SAXBuilder();
+        Document d;
+        Product product = new Product(ean,"buscape");    
+        try {
+            d = sb.build(br);
+            Element result = d.getRootElement();
+            List<Element> list = result.getChildren();
+            for (Element element : list) {
+                if (element.getName() == "category") {
+                    Element elementCategory = (Element) element.getChildren().get(2);
+                    product.setCategory(elementCategory.getContent(0).getValue());
+                }
+                if (element.getName() == "offer") {
+                    Element elementOffer = (Element) element.getChildren().get(0);
+                    String offer = elementOffer.getContent(0).getValue();
+                    if (!offer.isEmpty()) {
+                        product.setProductName(offer.trim());
+                        break;
+                    }
 
-    private static void print(String msg, Object... args) {
-        System.out.println(String.format(msg, args));
-    }
-
-    public Document searchCosmos(long ean) throws IOException {
-        doc = Jsoup.connect("http://cosmos.bluesoft.com.br/products/" + ean).get();
-        return doc;
-    }
-
-    private static String trim(String s, int width) {
-        if (s.length() > width) {
-            return s.substring(0, width - 1) + ".";
-        } else {
-            return s;
+                }
+            }
+        
+         }  catch (JDOMException ex) {
+            Logger.getLogger(SearchBuscapeMBean.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        con.disconnect();
+        return product;
     }
 }

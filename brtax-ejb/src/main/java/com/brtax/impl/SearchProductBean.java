@@ -4,18 +4,17 @@
  */
 package com.brtax.impl;
 
-import com.brtax.mbean.SearchProductMBean;
+import com.brtax.mbean.SearchBuscapeMBean;
+import com.brtax.mbean.SearchCosmosMBean;
+import com.brtax.mbean.SearchGoogleMBean;
 import com.brtax.service.SearchProductBeanLocal;
 import dao.ProductDAO;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.ejb.Stateless;
 import javax.jws.*;
+import model.NcmTax;
 import model.Product;
-import org.jsoup.nodes.Document;
 
 /**
  *
@@ -26,49 +25,71 @@ import org.jsoup.nodes.Document;
         serviceName = "BRTAXService",
         portName = "BRTAXSoapPort",
         targetNamespace = "http://brtax.com")
-
 public class SearchProductBean implements SearchProductBeanLocal {
 
-    Document doc = null;
-
-    List<Product> listProduct = new ArrayList<>();
-       @WebResult(name="result") 
-       @Override
-       public String searchProductEAN(@WebParam(name="ean")  String ean ) {
+    @WebResult(name = "result")
+    @Override
+    public String searchProductEAN(@WebParam(name = "ean") String ean) {
+        List<Product> listProduct = null;
+        String gtin = null;
+        String tax = null;
+        String productName = null;
+        int error = 0;
         try {
             long eanLong = Long.parseLong(ean);
             ProductDAO productDAO = new ProductDAO();
             listProduct = productDAO.searchProductToEan(eanLong);
-            String valor;
+            Product product = null;
+
+            // Verifica se o produto existe na base de dados
             if (listProduct.isEmpty()) {
-                SearchProductMBean searchProduct = new SearchProductMBean();
-                searchProduct.searchGoogle(eanLong);
-                searchProduct.searchCosmos(eanLong);
-                valor="Sucesso IF";
-            }else {
-             valor="Sucesso ELSE";
+                SearchCosmosMBean searchCosmos = new SearchCosmosMBean();
+                product = searchCosmos.searchProduct(eanLong, null, null);
+                if (product != null) {
+                    productDAO.create(product);
+                    gtin = ean;
+                    for (NcmTax ncmTax : product.getNcmCode().getNcmTaxList()) {
+                        tax = String.valueOf(ncmTax.getAliquot());
+                    }
+                    productName = product.getProductName();
+                } else {
+                    // se não achou dados de ncm no Cosmos busca no buscape a categoria
+                    SearchBuscapeMBean searchBuscape = new SearchBuscapeMBean();
+                    product = searchBuscape.searchProduct(eanLong);
+                    if (!product.getCategory().isEmpty()) {
+                        SearchGoogleMBean searchGoogle = new SearchGoogleMBean();
+                        String url = searchGoogle.searchDescription(product.getDescription());
+                        if (url.isEmpty()) {
+                            product = searchCosmos.searchProduct(0, url, product);
+                            productDAO.create(product);
+                        }
+                        gtin = ean;
+                        for (NcmTax ncmTax : product.getNcmCode().getNcmTaxList()) {
+                            tax = String.valueOf(ncmTax.getAliquot());
+                        }
+                        productName = product.getProductName();
+                    } else {
+                        // não achou informações sobre produto no cosmos e no buscape
+                        error = 1;
+                    }
+                }
+            } else {
+                for (Product prod : listProduct) {
+                    gtin = ean;
+                    for (NcmTax ncmTax : prod.getNcmCode().getNcmTaxList()) {
+                        tax = String.valueOf(ncmTax.getAliquot());
+                    }
+                    productName = prod.getProductName();
+                    break;
+
+                }
             }
-            
-
-            return valor;
-        } catch ( IOException e) {
-            String msg = e.toString();
-            return msg;
+        } catch (IOException e) {
         }
-        
+        String retorno = gtin + ";" + productName + ";" + tax + ";" + error;
+        return retorno;
+
 
 
     }
-    
-     @PostConstruct
-    public void initialize() {
-        System.out.println("Starting");
-    }
-
-    @PreDestroy
-    public void stop() {
-        System.out.println("Stopping");
-    }
-
-
 }
