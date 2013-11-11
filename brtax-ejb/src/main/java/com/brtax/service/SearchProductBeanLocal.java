@@ -4,6 +4,7 @@
  */
 package com.brtax.service;
 
+import com.brtax.dto.ProductDTO;
 import javax.ejb.Local;
 
 /**
@@ -13,11 +14,12 @@ import javax.ejb.Local;
 @Local
 public interface SearchProductBeanLocal {
     
-     /**
-     *
+    /**
+     * 
      * @param ean
-     * @return
+     * @param price
+     * @return 
      */
-    String searchProductEAN(String ean);
+    ProductDTO searchProductEAN(String ean, double price);
     
 }

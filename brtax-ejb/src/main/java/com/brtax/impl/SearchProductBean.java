@@ -4,12 +4,12 @@
  */
 package com.brtax.impl;
 
+import com.brtax.dto.ProductDTO;
 import com.brtax.mbean.SearchBuscapeMBean;
 import com.brtax.mbean.SearchCosmosMBean;
 import com.brtax.mbean.SearchGoogleMBean;
 import com.brtax.service.SearchProductBeanLocal;
 import dao.ProductDAO;
-import java.io.IOException;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.jws.*;
@@ -29,12 +29,15 @@ public class SearchProductBean implements SearchProductBeanLocal {
 
     @WebResult(name = "result")
     @Override
-    public String searchProductEAN(@WebParam(name = "ean") String ean) {
+    public ProductDTO searchProductEAN(@WebParam(name = "ean") String ean, @WebParam(name = "price") double price) {
         List<Product> listProduct = null;
         String gtin = null;
-        String tax = null;
+        double tax = 0;
         String productName = null;
         int error = 0;
+        ProductDTO productDTO= null;
+        
+        
         try {
             long eanLong = Long.parseLong(ean);
             ProductDAO productDAO = new ProductDAO();
@@ -49,7 +52,7 @@ public class SearchProductBean implements SearchProductBeanLocal {
                     productDAO.create(product);
                     gtin = ean;
                     for (NcmTax ncmTax : product.getNcmCode().getNcmTaxList()) {
-                        tax = String.valueOf(ncmTax.getAliquot());
+                        tax = ncmTax.getAliquot();
                     }
                     productName = product.getProductName();
                 } else {
@@ -65,7 +68,7 @@ public class SearchProductBean implements SearchProductBeanLocal {
                         }
                         gtin = ean;
                         for (NcmTax ncmTax : product.getNcmCode().getNcmTaxList()) {
-                            tax = String.valueOf(ncmTax.getAliquot());
+                            tax = ncmTax.getAliquot();
                         }
                         productName = product.getProductName();
                     } else {
@@ -77,17 +80,27 @@ public class SearchProductBean implements SearchProductBeanLocal {
                 for (Product prod : listProduct) {
                     gtin = ean;
                     for (NcmTax ncmTax : prod.getNcmCode().getNcmTaxList()) {
-                        tax = String.valueOf(ncmTax.getAliquot());
+                        tax = ncmTax.getAliquot();
                     }
                     productName = prod.getProductName();
                     break;
 
                 }
             }
-        } catch (IOException e) {
+            productDTO = new ProductDTO();
+            if (price != 0.00) {
+                productDTO.setValueTax(price * (tax/100));
+                productDTO.setPriceFee(price - productDTO.getValueTax());
+                productDTO.setPrice(price);
+            }
+
+            productDTO.setName(productName);    
+            productDTO.setTax(tax);
+
+        } catch( Exception e)  {
+           
         }
-        String retorno = gtin + ";" + productName + ";" + tax + ";" + error;
-        return retorno;
+        return productDTO;
 
 
 
