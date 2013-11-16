@@ -11,6 +11,7 @@ import com.brtax.mbean.SearchGoogleMBean;
 import com.brtax.service.SearchProductBeanLocal;
 import dao.ProductDAO;
 import java.util.List;
+import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.jws.*;
 import model.NcmTax;
@@ -21,22 +22,26 @@ import model.Product;
  * @author Felipe
  */
 @Stateless
-@WebService(name = "BRTAXPortType",
-        serviceName = "BRTAXService",
-        portName = "BRTAXSoapPort",
-        targetNamespace = "http://brtax.com")
+@WebService(targetNamespace = "http://brtax.com/")
 public class SearchProductBean implements SearchProductBeanLocal {
 
-    @WebResult(name = "result")
+    
     @Override
-    public ProductDTO searchProductEAN(@WebParam(name = "ean") String ean, @WebParam(name = "price") double price) {
+    @WebMethod
+    public ProductDTO searchProductEAN(@WebParam(name = "ean") String ean, @WebParam(name = "price")String priceString) throws EJBException{
         List<Product> listProduct = null;
         String gtin = null;
         double tax = 0;
         String productName = null;
         int error = 0;
+        double price ;
+        if(priceString.isEmpty()){
+          price = 0.00;  
+        }else{
+            price = Double.parseDouble(priceString);  
+        }
         ProductDTO productDTO= null;
-        
+     
         
         try {
             long eanLong = Long.parseLong(ean);
@@ -88,13 +93,13 @@ public class SearchProductBean implements SearchProductBeanLocal {
                 }
             }
             productDTO = new ProductDTO();
-            if (price != 0.00) {
+            if (price != 0.00){
                 productDTO.setValueTax(price * (tax/100));
                 productDTO.setPriceFee(price - productDTO.getValueTax());
                 productDTO.setPrice(price);
             }
 
-            productDTO.setName(productName);    
+            productDTO.setName(productName);
             productDTO.setTax(tax);
 
         } catch( Exception e)  {

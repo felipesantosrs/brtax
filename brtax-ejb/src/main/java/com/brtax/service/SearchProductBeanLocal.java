@@ -20,6 +20,6 @@ public interface SearchProductBeanLocal {
      * @param price
      * @return 
      */
-    ProductDTO searchProductEAN(String ean, double price);
+    ProductDTO searchProductEAN(String ean, String priceString);
     
 }
