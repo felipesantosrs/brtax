@@ -1,25 +1,19 @@
+/*
+ * BRTAX - Servidor
+ */
 package com.brtax.dto;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
+ * Classe que representa o dto do Product
  *
  * @author Felipe
  */
 public class ProductDTO {
-    
-    String name; 
- 
-    
-    double price; 
-    
-    double tax; 
-    
+
+    String name;
+    double price;
+    double tax;
     double priceFee;
-    
     double valueTax;
 
     public double getValueTax() {

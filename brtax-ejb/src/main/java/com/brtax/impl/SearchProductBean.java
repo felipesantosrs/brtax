@@ -1,6 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * BRTAX - Servidor
  */
 package com.brtax.impl;
 
@@ -18,6 +17,7 @@ import model.NcmTax;
 import model.Product;
 
 /**
+ * Classe que permite consultar informações dobre produto
  *
  * @author Felipe
  */
@@ -25,24 +25,33 @@ import model.Product;
 @WebService(targetNamespace = "http://brtax.com/")
 public class SearchProductBean implements SearchProductBeanLocal {
 
-    
+    /**
+     * Método que realiza consulta de informações sobre produto
+     *
+     * @param ean- código ean informado na chamada do web service
+     * @param priceString - preço em formato string
+     * @return retorna informações sobre produto: nome, aliquota de imposto,
+     * valor de imposto e etc..
+     *
+     * @throws EJBException
+     */
     @Override
     @WebMethod
-    public ProductDTO searchProductEAN(@WebParam(name = "ean") String ean, @WebParam(name = "price")String priceString) throws EJBException{
+    public ProductDTO searchProductEAN(@WebParam(name = "ean") String ean, @WebParam(name = "price") String priceString) throws EJBException {
         List<Product> listProduct = null;
         String gtin = null;
         double tax = 0;
         String productName = null;
         int error = 0;
-        double price ;
-        if(priceString.isEmpty()){
-          price = 0.00;  
-        }else{
-            price = Double.parseDouble(priceString);  
+        double price;
+        if (priceString.isEmpty()) {
+            price = 0.00;
+        } else {
+            price = Double.parseDouble(priceString);
         }
-        ProductDTO productDTO= null;
-     
-        
+        ProductDTO productDTO = null;
+
+
         try {
             long eanLong = Long.parseLong(ean);
             ProductDAO productDAO = new ProductDAO();
@@ -66,8 +75,8 @@ public class SearchProductBean implements SearchProductBeanLocal {
                     product = searchBuscape.searchProduct(eanLong);
                     if (!product.getCategory().isEmpty()) {
                         SearchGoogleMBean searchGoogle = new SearchGoogleMBean();
-                        String url = searchGoogle.searchDescription(product.getDescription());
-                        if (url.isEmpty()) {
+                        String url = searchGoogle.searchDescription(product.getProductName());
+                        if (!url.isEmpty()) {
                             product = searchCosmos.searchProduct(0, url, product);
                             productDAO.create(product);
                         }
@@ -93,8 +102,8 @@ public class SearchProductBean implements SearchProductBeanLocal {
                 }
             }
             productDTO = new ProductDTO();
-            if (price != 0.00){
-                productDTO.setValueTax(price * (tax/100));
+            if (price != 0.00) {
+                productDTO.setValueTax(price * (tax / 100));
                 productDTO.setPriceFee(price - productDTO.getValueTax());
                 productDTO.setPrice(price);
             }
@@ -102,8 +111,7 @@ public class SearchProductBean implements SearchProductBeanLocal {
             productDTO.setName(productName);
             productDTO.setTax(tax);
 
-        } catch( Exception e)  {
-           
+        } catch (Exception e) {
         }
         return productDTO;
 

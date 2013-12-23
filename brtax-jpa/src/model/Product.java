@@ -1,6 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * BRTAX - Servidor
  */
 package model;
 
@@ -19,6 +18,7 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * Representa a tabela Product
  *
  * @author Felipe
  */
@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Product.findByGtin", query = "SELECT p FROM Product p WHERE p.gtin = :gtin"),
     @NamedQuery(name = "Product.findByPartner", query = "SELECT p FROM Product p WHERE p.partner = :partner")})
 public class Product implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -147,5 +148,4 @@ public class Product implements Serializable {
     public String toString() {
         return "model.Product[ idProduct=" + idProduct + " ]";
     }
-    
 }

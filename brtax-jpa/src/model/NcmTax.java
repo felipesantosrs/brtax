@@ -1,6 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * BRTAX - Servidor
  */
 package model;
 
@@ -19,6 +18,7 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * Representa a tabela NCM Tax
  *
  * @author Felipe
  */
@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "NcmTax.findByIdNcmTax", query = "SELECT n FROM NcmTax n WHERE n.idNcmTax = :idNcmTax"),
     @NamedQuery(name = "NcmTax.findByAliquot", query = "SELECT n FROM NcmTax n WHERE n.aliquot = :aliquot")})
 public class NcmTax implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -98,5 +99,4 @@ public class NcmTax implements Serializable {
     public String toString() {
         return "model.NcmTax[ idNcmTax=" + idNcmTax + " ]";
     }
-    
 }
